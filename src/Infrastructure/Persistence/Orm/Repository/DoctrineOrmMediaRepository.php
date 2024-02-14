@@ -76,13 +76,25 @@ final class DoctrineOrmMediaRepository extends ServiceEntityRepository implement
     {
         $queryBuilder = $this->createQueryBuilder($criteria::modelAlias());
 
-        return $this->doctrineCriteriaBuilderFactory
-            ->create($queryBuilder, $criteria)
-            ->where()
-            ->withLimit()
-            ->withOrder()
-            ->getQuery()
-            ->getResult();
+        $q = $this->doctrineCriteriaBuilderFactory
+          ->create($queryBuilder, $criteria)
+          ->where()
+          ->withLimit()
+          ->withOrder()
+          ->getQuery();
+
+        foreach ($q->getParameters() as $param) {
+          if (\str_starts_with($param->getName(),'m_file_name_')) {
+            $value = $param->getValue();
+            $value = str_replace('*','%', $value);  // Wildcard
+            if (\str_starts_with($value, '%^')) { // ^ indicates "starts with"
+              $value = substr($value,2);
+            }
+            $param->setValue($value);
+          }
+        }
+
+        return $q->getResult();
     }
 
     /**
