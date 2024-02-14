@@ -113,7 +113,8 @@ final class DoctrineOrmMediaRepository extends ServiceEntityRepository implement
 
     public function getByFilePath(string $filePath): Media
     {
-        $media = $this->findOneBy(['file.path' => $filePath]);
+        $filename = \pathinfo($filePath,PATHINFO_BASENAME); // Include the filename so as to use the index
+        $media = $this->findOneBy(['file.name' => $filename, 'file.path' => $filePath]);
         if (!$media) {
             throw NotFoundMediaException::withFilePath($filePath);
         }
