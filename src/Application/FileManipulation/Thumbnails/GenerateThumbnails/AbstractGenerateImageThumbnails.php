@@ -89,6 +89,7 @@ abstract class AbstractGenerateImageThumbnails
         $filePath   = $this->filePathResolver->resolve($file->path());
         $thumbnails = new Thumbnails();
         foreach ($this->breakpoints as $nameBreakpoint => $dimensionBreakpoint) {
+            if (!$dimensionBreakpoint) continue;
             if ($dimensionBreakpoint[0] && $dimensionBreakpoint[0] > $fileDimension->width()) {
                 continue;
             }
