@@ -38,6 +38,9 @@ class CreateMedia
         $userIdentifierVO = new UserIdentifier($userIdentifier);
         // upload file
         $file = $this->fileRepository->upload($uploadedFileRequest);
+
+        $humanFilename = preg_replace('#_\d+\.#','.',$file->name());  // Remove the unique serial
+
         // create and save media
         $media = Media::create(
             $id,
@@ -47,7 +50,7 @@ class CreateMedia
                 $this->filePathResolver->resolve($file->path()),
                 $file->mime()
             ),
-            new Description(FileHelper::humanTitleFromFileName($file->name()))
+            new Description(FileHelper::humanTitleFromFileName($humanFilename))
         );
         $this->mediaRepository->save($media);
         // publish domain events
