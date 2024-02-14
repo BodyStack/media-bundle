@@ -36,14 +36,15 @@ class RenameFile
         }
 
         // get safe file name
-        $newFileName = $this->safeFileName->__invoke($updateMediaRequest->name(), $media->file()->extension());
+        $originalPath = \pathinfo($media->file()->path(),PATHINFO_DIRNAME);
+        $newFileName = $this->safeFileName->__invoke($updateMediaRequest->name(), $media->file()->extension(), $originalPath);
         $oldPath     = $this->filePathResolver->resolve($media->file()->path());
-        $newPath     = $this->filePathResolver->resolve($newFileName);
+        $newPath     = $this->filePathResolver->resolve("$originalPath/$newFileName");
 
         // rename original file
         $this->fileRepository->rename($oldPath, $newPath);
         // TODO: support new directory in path
-        $file = $media->file()->update($newFileName, $newFileName);
+        $file = $media->file()->update($newFileName, "$originalPath/$newFileName");
         $media->updateFile($file, new UserIdentifier($userIdentifier));
 
         // rename thumbnails file

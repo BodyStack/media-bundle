@@ -13,6 +13,7 @@ use Ranky\MediaBundle\Domain\Exception\RenameFileException;
 use Ranky\MediaBundle\Domain\ValueObject\Dimension;
 use Ranky\MediaBundle\Domain\ValueObject\File;
 use Ranky\SharedBundle\Common\FileHelper;
+use Twig\Environment;
 
 class LocalFileRepository implements FileRepositoryInterface
 {
@@ -20,25 +21,33 @@ class LocalFileRepository implements FileRepositoryInterface
     public function __construct(
         private readonly SafeFileName $safeFileName,
         private readonly FilePathResolverInterface $filePathResolver,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private string $uploadPath,
+        private Environment $twig,
     ) {
     }
 
     public function upload(UploadedFileRequest $uploadedFileRequest): File
     {
-        $name = $this->safeFileName->__invoke($uploadedFileRequest->name(), $uploadedFileRequest->extension());
-        $file = new File(
-            $name,
-            $name, // TODO: support new directory in path
-            $uploadedFileRequest->mime(),
-            $uploadedFileRequest->extension(),
-            $uploadedFileRequest->size()
-        );
+        if (stripos($this->uploadPath,'{{')!==false) {
+          $uploadPath = trim($this->twig->createTemplate($this->uploadPath)->render(),'/');
+        }
 
-        // TODO: support new directory in path
+        $name = $this->safeFileName->__invoke($uploadedFileRequest->name(), $uploadedFileRequest->extension(), $uploadPath);
+
+        $filepath = "$uploadPath/$name";
+
         $this->rename(
             $uploadedFileRequest->path(),
-            $this->filePathResolver->resolve($file->name())
+            $this->filePathResolver->resolve($filepath)
+        );
+
+        $file = new File(
+          $name,
+          $filepath,
+          $uploadedFileRequest->mime(),
+          $uploadedFileRequest->extension(),
+          $uploadedFileRequest->size()
         );
 
         return $file;

@@ -346,6 +346,12 @@ This is the directory where uploaded files will be stored.
 
 **Example:** %kernel.project_dir%/public/uploads
 
+**upload_path** (string, default: ``)
+
+This is the path in the uploads directory where *new* uploads are stored.  You can use twig style template variables for dynamic paths.
+
+**Example:** {{ "now"|date("Y/m") }}
+
 **upload_url** (string, default: `/uploads`)
 
 This is the URL where uploaded files will be accessible.

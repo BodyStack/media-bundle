@@ -20,6 +20,7 @@ use Ranky\MediaBundle\Infrastructure\FileManipulation\Thumbnails\Resize\Gifsicle
 use Ranky\MediaBundle\Infrastructure\FileManipulation\Thumbnails\Resize\ImagickGifFileResize;
 use Ranky\MediaBundle\Infrastructure\FileManipulation\Thumbnails\Resize\InterventionFileResize;
 use Ranky\MediaBundle\Infrastructure\Filesystem\Local\LocalFilePathResolver;
+use Ranky\MediaBundle\Infrastructure\Filesystem\Local\LocalFileRepository;
 use Ranky\MediaBundle\Infrastructure\Filesystem\Local\LocalFileUrlResolver;
 use Ranky\MediaBundle\Infrastructure\Persistence\Dbal\Types\MediaIdType;
 use Ranky\MediaBundle\Infrastructure\Persistence\Dbal\Types\ThumbnailCollectionType;
@@ -108,6 +109,9 @@ class MediaBundleExtension extends Extension implements PrependExtensionInterfac
 
         $container->getDefinition(LocalFilePathResolver::class)
             ->setArgument('$uploadDirectory', $config['upload_directory']);
+
+        $container->getDefinition(LocalFileRepository::class)
+            ->setArgument('$uploadPath', $config['upload_path']);
 
         $container->getDefinition(LocalFileUrlResolver::class)
             ->setArgument('$uploadUrl', $uploadUrl);

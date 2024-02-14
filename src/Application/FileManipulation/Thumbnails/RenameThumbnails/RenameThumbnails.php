@@ -24,11 +24,13 @@ class RenameThumbnails
         $newThumbnails = new Thumbnails();
         /* @var Thumbnail $thumbnail */
         foreach ($thumbnails as $thumbnail) {
-            $oldPath = $this->filePathResolver->resolveFromBreakpoint($thumbnail->breakpoint(), $thumbnail->name());
-            $newPath = $this->filePathResolver->resolveFromBreakpoint($thumbnail->breakpoint(), $newFileName);
+            $filepath = $this->filePathResolver->resolveFilePathFromBreakpoint($thumbnail->breakpoint(),$thumbnail->path());
+            $path = \pathinfo($filepath,PATHINFO_DIRNAME);
+            $oldPath = $this->filePathResolver->resolve($thumbnail->path());
+            $newPath = $this->filePathResolver->resolveFromBreakpoint($thumbnail->breakpoint(), "$path/" . $newFileName);
             $this->fileRepository->rename($oldPath, $newPath);
 
-            $thumbnailPath = $this->fileUrlResolver->resolvePathFromBreakpoint($thumbnail->breakpoint(), $newFileName);
+            $thumbnailPath = $this->fileUrlResolver->resolvePathFromBreakpoint($thumbnail->breakpoint(), "$path/" . $newFileName);
             $newThumbnails->add($thumbnail->rename($newFileName, $thumbnailPath));
         }
 

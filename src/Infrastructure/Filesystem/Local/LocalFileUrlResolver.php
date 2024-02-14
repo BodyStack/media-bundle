@@ -61,7 +61,7 @@ final class LocalFileUrlResolver implements FileUrlResolverInterface
 
 
         $relative = \sprintf(
-            '/%s/%s/%s',
+            '/%s/styles/%s/%s',
             \trim($uploadUrl, '/'),
             $breakpoint,
             \trim($path, '/')
@@ -83,11 +83,11 @@ final class LocalFileUrlResolver implements FileUrlResolverInterface
         if (\str_contains($path, $this->uploadUrl)) {
             $path = \str_replace($this->uploadUrl, '', $path);
         }
-        if (\str_contains($path, '/'.$breakpoint)) {
-            $path = \str_replace('/'.$breakpoint, '', $path);
+        if (\str_contains($path, '/styles/'.$breakpoint)) {
+            $path = \str_replace('/styles/'.$breakpoint, '', $path);
         }
 
-        return sprintf('/%s/%s', $breakpoint, trim($path, '/'));
+        return sprintf('/styles/%s/%s', $breakpoint, trim($path, '/'));
     }
 
 

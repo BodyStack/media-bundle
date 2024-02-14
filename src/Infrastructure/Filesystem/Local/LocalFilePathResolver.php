@@ -11,29 +11,38 @@ final class LocalFilePathResolver implements FilePathResolverInterface
 
     public function __construct(private readonly string $uploadDirectory)
     {
+
     }
 
     public function resolve(?string $path = null): string
     {
-        if (!$path) {
-            return $this->uploadDirectory;
-        }
-
-        return \sprintf('%s/%s', $this->uploadDirectory, \trim($path, '/'));
+      $paths = [$this->uploadDirectory];
+      if ($path) $paths[] = \trim($path,'/');
+      return implode('/',$paths);
     }
 
     public function resolveFromBreakpoint(string $breakpoint, string $path = null): string
     {
-
         if (!Breakpoint::tryFrom($breakpoint)){
             throw new \InvalidArgumentException(\sprintf('%s is not a valid value for Breakpoint enum', $breakpoint));
         }
 
-        if (!$path) {
-            return \sprintf('%s/%s', $this->uploadDirectory, $breakpoint);
-        }
+        $paths = [$this->uploadDirectory];
+        $paths[] = 'styles';
+        $paths[] = $breakpoint;
+        if ($path) $paths[] = \trim($path,'/');
+        return implode('/',$paths);
+    }
 
-        return \sprintf('%s/%s/%s', $this->uploadDirectory, $breakpoint, \trim($path, '/'));
+    public function resolveFilePathFromBreakpoint(string $breakpoint, string $breakpointFilePath = null): string
+    {
+      if (!Breakpoint::tryFrom($breakpoint)){
+        throw new \InvalidArgumentException(\sprintf('%s is not a valid value for Breakpoint enum', $breakpoint));
+      }
 
+      $path = $breakpointFilePath;
+      $path = preg_replace('#^' .preg_quote($this->uploadDirectory,'#') . '#','',$path);
+      $path = preg_replace('#^/?' .preg_quote('styles/'.$breakpoint,'#') . '#','',$path);
+      return trim($path,'/');
     }
 }

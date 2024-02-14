@@ -8,4 +8,6 @@ interface FilePathResolverInterface
     public function resolve(?string $path = null): string;
 
     public function resolveFromBreakpoint(string $breakpoint, ?string $path = null): string;
+
+    public function resolveFilePathFromBreakpoint(string $breakpoint, string $breakpointFilePath = null): string;
 }
