@@ -12,7 +12,9 @@ use Ranky\MediaBundle\Domain\Contract\FileRepositoryInterface;
 use Ranky\MediaBundle\Domain\Contract\MediaRepositoryInterface;
 use Ranky\MediaBundle\Domain\ValueObject\MediaId;
 use Ranky\SharedBundle\Domain\Event\DomainEventPublisher;
+use Ranky\SharedBundle\Domain\Exception\ApiProblem\ApiProblemException;
 use Ranky\SharedBundle\Domain\ValueObject\UserIdentifier;
+use DateTimeImmutable;
 
 class RenameFile
 {
@@ -33,6 +35,14 @@ class RenameFile
 
         if ($updateMediaRequest->name() === \pathinfo($media->file()->name(), \PATHINFO_FILENAME)) {
             return;
+        }
+
+        if ($media->createdAt() < new DateTimeImmutable("-10 min")) {
+          throw ApiProblemException::create("Sorry, you can only rename the file within 10 minutes of uploading");
+        }
+
+        if ($userIdentifier !== $media->createdBy()->value()) {
+          throw ApiProblemException::create("Sorry, only the original uploader can rename the file");
         }
 
         // get safe file name
