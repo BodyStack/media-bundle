@@ -12,7 +12,7 @@ use Ranky\SharedBundle\Application\Dto\ResponseDtoInterface;
 final class DescriptionResponse implements ResponseDtoInterface
 {
 
-    public function __construct(private readonly string $alt, private readonly string $title)
+    public function __construct(private readonly string $alt, private readonly string $title, private readonly string $cite)
     {
     }
 
@@ -20,7 +20,8 @@ final class DescriptionResponse implements ResponseDtoInterface
     {
         return new self(
             $description->alt(),
-            $description->title()
+            $description->title(),
+            $description->cite()
         );
     }
 
@@ -34,6 +35,11 @@ final class DescriptionResponse implements ResponseDtoInterface
         return $this->title;
     }
 
+    public function cite(): string
+    {
+      return $this->cite;
+    }
+
     /**
      * @return array{alt: string, title: string}
      */
@@ -42,11 +48,12 @@ final class DescriptionResponse implements ResponseDtoInterface
         return [
             'alt' => $this->alt(),
             'title' => $this->title(),
+            'cite' => $this->cite(),
         ];
     }
 
     /**
-     * @return array{alt: string, title: string}
+     * @return array{alt: string, title: string, cite: string}
      */
     public function jsonSerialize(): array
     {

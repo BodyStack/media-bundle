@@ -17,7 +17,8 @@ class UpdateMediaRequest implements RequestDtoInterface
         private readonly string $id,
         private readonly string $name,
         private readonly string $alt,
-        private readonly string $title
+        private readonly string $title,
+        private readonly string $cite,
     ) {}
 
     public function id(): string
@@ -40,6 +41,11 @@ class UpdateMediaRequest implements RequestDtoInterface
         return $this->title;
     }
 
+    public function cite(): string
+    {
+      return $this->cite;
+    }
+
     /**
      * @param array<string, mixed> $data
      * @return self
@@ -51,6 +57,7 @@ class UpdateMediaRequest implements RequestDtoInterface
             self::getString($data, 'name'),
             self::getString($data, 'alt'),
             self::getString($data, 'title'),
+            self::getString($data, 'cite'),
         );
     }
 
@@ -64,6 +71,7 @@ class UpdateMediaRequest implements RequestDtoInterface
             'name' => $this->name,
             'alt' => $this->alt,
             'title' => $this->title,
+            'cite' => $this->cite,
         ];
     }
 

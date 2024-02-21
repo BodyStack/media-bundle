@@ -37,6 +37,7 @@ return [
     'form_name'                    => 'Name',
     'form_alt'                     => 'Alternative Text',
     'form_title'                   => 'Title',
+    'form_cite'                    => 'Citation',
     'form_save'                    => 'Save',
     'delete'                       => 'Delete',
     'modal_title'                  => 'File details {file_name} <small>id: {id}</small>',

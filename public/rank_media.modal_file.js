@@ -129,7 +129,8 @@
                     id: m.id,
                     name: m.file.basename,
                     alt: m.description.alt,
-                    title: m.description.title
+                    title: m.description.title,
+                    cite: m.description.cite
                 }), h = e => {
                     const t = e.target, a = {[t.name]: t.value};
                     y({...u, ...a})
@@ -202,6 +203,13 @@
                 name: "title",
                 id: "ranky-media-file__form__title",
                 value: u.title,
+                onChange: h,
+                required: !0
+            }), l.createElement("label", {htmlFor: "cite"}, l.createElement(r.Z, {message: "form_cite"})), l.createElement("input", {
+                type: "text",
+                name: "cite",
+                id: "ranky-media-file__form__cite",
+                value: u.cite,
                 onChange: h,
                 required: !0
             }), l.createElement("input", {

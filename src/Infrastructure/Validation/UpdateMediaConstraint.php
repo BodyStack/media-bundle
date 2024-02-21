@@ -22,6 +22,7 @@ final class UpdateMediaConstraint
             'name' => [new NotBlank(), new Length(max: 200)],
             'alt' => [new NotBlank(), new Length(max: 255)],
             'title' => [new NotBlank(), new Length(max: 255)],
+            'cite' => [new NotBlank(), new Length(max: 255)],
         ];
     }
 

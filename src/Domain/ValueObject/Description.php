@@ -17,10 +17,14 @@ final class Description
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private readonly string $title;
 
-    public function __construct(string $alt, ?string $title = null)
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private readonly ?string $cite;
+
+    public function __construct(string $alt, ?string $title = null, ?string $cite = '')
     {
         $this->alt = $alt;
         $this->title = $title ?? $alt;
+        $this->cite = $cite??'';
     }
 
     public function alt(): string
@@ -33,6 +37,8 @@ final class Description
         return $this->title;
     }
 
-
-
+    public function cite(): string
+    {
+      return $this->cite??'';
+    }
 }
