@@ -38,8 +38,8 @@ final class MediaResponse implements ResponseDtoInterface
         $this->dimension   = DimensionResponse::fromDimension($media->dimension());
         $this->description = DescriptionResponse::fromDescription($media->description());
         $this->thumbnails  = ThumbnailsResponse::fromThumbnails($media->thumbnails(), $uploadUrl);
-        $this->createdBy   = \ucfirst($createdBy);
-        $this->updatedBy   = \ucfirst($updatedBy);
+        $this->createdBy   = $createdBy;
+        $this->updatedBy   = $updatedBy;
         $this->createdAt   = $media->createdAt();
         $this->updatedAt   = $media->updatedAt();
     }
