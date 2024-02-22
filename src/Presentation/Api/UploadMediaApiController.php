@@ -8,6 +8,7 @@ use Ranky\MediaBundle\Application\CreateMedia\CreateMedia;
 use Ranky\MediaBundle\Application\CreateMedia\UploadedFileRequest;
 use Ranky\MediaBundle\Infrastructure\Event\PostCreateEvent;
 use Ranky\MediaBundle\Infrastructure\Event\PreCreateEvent;
+use Ranky\MediaBundle\Infrastructure\Persistence\Orm\Repository\DoctrineOrmUserMediaRepository;
 use Ranky\MediaBundle\Infrastructure\Validation\UploadedFileValidator;
 use Ranky\SharedBundle\Presentation\Attributes\File\File;
 use Ranky\SharedBundle\Domain\Exception\ApiProblem\ApiProblemException;
@@ -26,7 +27,8 @@ class UploadMediaApiController extends BaseMediaApiController
     public function __construct(
         private readonly CreateMedia $createMedia,
         private readonly UploadedFileValidator $uploadedFileValidator,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly DoctrineOrmUserMediaRepository $doctrineOrmUserMediaRepository
     ) {
     }
 
@@ -53,7 +55,7 @@ class UploadMediaApiController extends BaseMediaApiController
             );
             $mediaResponse = $this->createMedia->__invoke(
                 $uploadedFileRequest,
-                $user?->getUserIdentifier()
+                $this->doctrineOrmUserMediaRepository->getUserIdentifierFromUser($user)
             );
             $this->eventDispatcher->dispatch(
                 new PostCreateEvent($mediaResponse),

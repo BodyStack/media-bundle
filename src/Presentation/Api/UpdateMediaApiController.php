@@ -9,6 +9,7 @@ use Ranky\MediaBundle\Application\UpdateMedia\UpdateMedia;
 use Ranky\MediaBundle\Application\UpdateMedia\UpdateMediaRequest;
 use Ranky\MediaBundle\Infrastructure\Event\PostUpdateEvent;
 use Ranky\MediaBundle\Infrastructure\Event\PreUpdateEvent;
+use Ranky\MediaBundle\Infrastructure\Persistence\Orm\Repository\DoctrineOrmUserMediaRepository;
 use Ranky\MediaBundle\Infrastructure\Validation\UpdateMediaConstraint;
 use Ranky\SharedBundle\Domain\Exception\ApiProblem\ApiProblemException;
 use Ranky\SharedBundle\Presentation\Attributes\Body\Body;
@@ -26,7 +27,8 @@ class UpdateMediaApiController extends BaseMediaApiController
 
     public function __construct(
         private readonly UpdateMedia $updateMedia,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly DoctrineOrmUserMediaRepository $doctrineOrmUserMediaRepository,
     ) {
     }
 
@@ -54,7 +56,7 @@ class UpdateMediaApiController extends BaseMediaApiController
             );
             $mediaResponse = $this->updateMedia->__invoke(
                 $updateMediaRequest,
-                $user?->getUserIdentifier()
+                $this->doctrineOrmUserMediaRepository->getUserIdentifierFromUser($user),
             );
             $this->eventDispatcher->dispatch(
                 new PostUpdateEvent($mediaResponse),

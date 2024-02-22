@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Ranky\MediaBundle\Domain\Contract\UserMediaRepositoryInterface;
 use Ranky\MediaBundle\Domain\Model\Media;
 use Ranky\SharedBundle\Domain\ValueObject\UserIdentifier;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<\Symfony\Component\Security\Core\User\UserInterface>
@@ -18,7 +19,8 @@ final class DoctrineOrmUserMediaRepository extends ServiceEntityRepository imple
     public function __construct(
         ManagerRegistry $registry,
         private readonly ?string $userEntity,
-        private readonly string $userIdentifierProperty
+        private readonly string $userIdentifierProperty,
+        private readonly string $userNameProperty
     ) {
         parent::__construct($registry, Media::class);
     }
@@ -36,7 +38,7 @@ final class DoctrineOrmUserMediaRepository extends ServiceEntityRepository imple
 
     public function getUsernameByUserIdentifier(UserIdentifier $userIdentifier): string
     {
-        if ($this->userIdentifierProperty === 'username') {
+        if ($this->userIdentifierProperty === $this->userNameProperty) {
             return $userIdentifier->value();
         }
         if (!$this->userEntity){
@@ -45,14 +47,22 @@ final class DoctrineOrmUserMediaRepository extends ServiceEntityRepository imple
         try {
             return $this->_em->createQueryBuilder()
                 ->from($this->userEntity, 'u')
-                ->select('u.username')
+                ->select("u.$this->userNameProperty")
                 ->where(sprintf('u.%s = :identifier', $this->userIdentifierProperty))
                 ->setParameter('identifier', $userIdentifier->value())
                 ->getQuery()
-                ->getSingleResult()['username'];
+                ->getSingleResult()[$this->userNameProperty];
         } catch (\Throwable) {
             // TODO
             return UserIdentifier::DEFAULT_USER_IDENTIFIER;
         }
+    }
+
+    public function getUserIdentifierFromUser(?UserInterface $user): ?string {
+      if(!$user) return null;
+      else {
+        $getter = "get" . str_replace('_','',ucwords($this->userIdentifierProperty));
+        return (string)($user->$getter());
+      }
     }
 }

@@ -93,7 +93,8 @@ class MediaBundleExtension extends Extension implements PrependExtensionInterfac
         $doctrineOrmUserMediaRepositoryDefinition
             ->setAutowired(true)
             ->setArgument('$userEntity', $config['user_entity'])
-            ->setArgument('$userIdentifierProperty', $config['user_identifier_property']);
+            ->setArgument('$userIdentifierProperty', $config['user_identifier_property'])
+            ->setArgument('$userNameProperty', $config['user_name_property']);
         $container->setAlias(UserMediaRepositoryInterface::class, DoctrineOrmUserMediaRepository::class);
         $container->setDefinition(DoctrineOrmUserMediaRepository::class, $doctrineOrmUserMediaRepositoryDefinition);
 

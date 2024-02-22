@@ -322,9 +322,13 @@ This is the fully qualified class name (FQCN) of the user entity class. This is 
 
 **Example:** `User::class`
 
-**user_identifier_property** (string, default: `username`)
+**user_identifier_property** (string, default: `id`)
 
-This is the property of the user entity that contains the user identifier. This is required if it is different from the `username`.
+This is the property of the user entity that contains the user identifier. This is required if it is different from the `id`.
+
+**user_name_property** (string, default: `username`)
+
+This is the property of the user entity that contains the username. This is required if it is different from the `username`.
 
 **date_time_format** (string, default: `Y-m-d H:i`)
 
