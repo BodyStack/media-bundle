@@ -110,9 +110,16 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('original_max_width')
                                     ->info(
                                         'Maximum width for the original file. This way we will not save a large number of megabytes. '.
-                                             'Null value will not resize the original image'
+                                             'Null value will not resize the original image by width'
                                     )
                                     ->defaultValue(Media::ORIGINAL_IMAGE_MAX_WIDTH)
+                                ->end()
+                                ->scalarNode('original_max_height')
+                                  ->info(
+                                    'Maximum height for the original file. This way we will not save a large number of megabytes. '.
+                                    'Null value will not resize the original image by height'
+                                  )
+                                  ->defaultValue(Media::ORIGINAL_IMAGE_MAX_HEIGHT)
                                 ->end()
                                 ->arrayNode('breakpoints')->addDefaultsIfNotSet()
                                     ->children()

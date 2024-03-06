@@ -31,6 +31,7 @@ abstract class AbstractGenerateImageThumbnails
      */
     public function __construct(
         protected readonly ?int $originalMaxWidth,
+        protected readonly ?int $originalMaxHeight,
         protected readonly array $breakpoints,
         protected readonly FileResizeHandler $fileResizeHandler,
         protected readonly MediaRepositoryInterface $mediaRepository,
@@ -56,8 +57,8 @@ abstract class AbstractGenerateImageThumbnails
           $media->updateFileDimension($file, $fileDimension);
         }
 
-        // resize original if is the case
-        if (\is_int($this->originalMaxWidth)) {
+        // resize original if the image is too large in a given dimension
+        if (\is_int($this->originalMaxWidth) || \is_int($this->originalMaxHeight)) {
             [$file, $fileDimension] = $this->resizeOriginalFile($file, $fileDimension);
             $media->updateFileDimension($file, $fileDimension);
         }
@@ -92,13 +93,20 @@ abstract class AbstractGenerateImageThumbnails
      */
     protected function resizeOriginalFile(File $file, Dimension $fileDimension): array
     {
-        if ($fileDimension->width() && $fileDimension->width() > $this->originalMaxWidth) {
+      // Resize only along the larger dimension
+      $scaleX = $this->originalMaxWidth ? $fileDimension->width() / $this->originalMaxWidth : 1;
+      $scaleY = $this->originalMaxHeight ? $fileDimension->height() / $this->originalMaxHeight : 1;
+
+        if ($scaleX>1 || $scaleY>1) {
+          if ($scaleX > $scaleY) $newDimension = new Dimension($this->originalMaxWidth,null);
+          else $newDimension = new Dimension(null,$this->originalMaxHeight);
+
             $outputPath = $this->filePathResolver->resolve($file->path());
             if (!$this->fileResizeHandler->resize(
                 $file,
                 $outputPath,
                 $outputPath,
-                new Dimension($this->originalMaxWidth)
+                $newDimension,
             )) {
                 return [$file, $fileDimension];
             }

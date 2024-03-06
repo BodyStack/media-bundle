@@ -411,6 +411,7 @@ This is the driver that will be used for GIF image resizing. The available drive
 This is the quality of the compression images. The default value is 80.
 
 **original_max_width** (integer, default: `1920`)
+**original_max_height** (integer, default: `1920`)
 
 This is the maximum width for the original file. This will prevent the original file from being stored with a large number of megabytes. 
 A null value will not resize the image.

@@ -140,6 +140,7 @@ class MediaBundleExtension extends Extension implements PrependExtensionInterfac
          */
         $container->getDefinition(AbstractGenerateImageThumbnails::class)
             ->setArgument('$originalMaxWidth', $config['image']['original_max_width'])
+            ->setArgument('$originalMaxHeight', $config['image']['original_max_height'])
             ->setArgument('$breakpoints', $config['image']['breakpoints']);
 
         $container->getDefinition(SpatieFileCompression::class)

@@ -30,6 +30,7 @@ class Media extends AggregateRoot
 {
     public const IMAGE_QUALITY            = 80;
     public const ORIGINAL_IMAGE_MAX_WIDTH = 1920;
+    public const ORIGINAL_IMAGE_MAX_HEIGHT = 1920;
     public const MAX_FILE_SIZE            = 7340032;
 
     use DateAtTrait;

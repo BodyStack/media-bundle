@@ -69,9 +69,9 @@ final class InterventionFileResize implements FileResizeInterface
         }
 
         $this->logger->info('Start Intervention Image resizes', $loggerContext);
-        if (!$dimension->width()) {
+        if (!$dimension->width() && !$dimension->height()) {
             $this->logger->info(
-                'The Image did not resize, because it does not have the width dimension.',
+                'The Image did not resize, because no resize dimension was specified.',
                 $loggerContext
             );
 
@@ -81,15 +81,22 @@ final class InterventionFileResize implements FileResizeInterface
         $manager   = new ImageManager(['driver' => $this->resizeImageDriver]);
         $image     = $manager->make($inputPath);
         $image->orientate();
-        if (null !== $dimension->height()) {
-            $image->fit($dimension->width(), $dimension->height(), function (Constraint $constraint): void {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-        } else {
-            $image->widen($dimension->width(), function (Constraint $constraint): void {
-                $constraint->upsize();
-            });
+
+        if ($dimension->width() && $dimension->height()) {
+          $image->fit($dimension->width(), $dimension->height(), function (Constraint $constraint): void {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+          });
+        }
+        else if ($dimension->width()) {
+          $image->widen($dimension->width(), function (Constraint $constraint): void {
+            $constraint->upsize();
+          });
+        }
+        else {
+          $image->heighten($dimension->height(), function (Constraint $constraint): void {
+            $constraint->upsize();
+          });
         }
 
         try {
