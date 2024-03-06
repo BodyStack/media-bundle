@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Ranky\MediaBundle\Application\FileManipulation\Thumbnails\GenerateThumbnails;
 
+use Intervention\Image\ImageManager;
 use Ranky\MediaBundle\Domain\Contract\FilePathResolverInterface;
 use Ranky\MediaBundle\Domain\Contract\FileRepositoryInterface;
 use Ranky\MediaBundle\Domain\Contract\FileUrlResolverInterface;
 use Ranky\MediaBundle\Domain\Contract\MediaRepositoryInterface;
+use Ranky\MediaBundle\Domain\Enum\ImageResizeDriver;
 use Ranky\MediaBundle\Domain\Service\FileResizeHandler;
 use Ranky\MediaBundle\Domain\ValueObject\Dimension;
 use Ranky\MediaBundle\Domain\ValueObject\File;
@@ -46,7 +48,14 @@ abstract class AbstractGenerateImageThumbnails
 
         if(!$this->fileResizeHandler->support($file)) {
              return;
-         }
+        }
+
+        // Re-orient the file so that the proper width and height dimensions are determined
+        if($results = $this->reorientOriginalFile($file)) {
+          [$file, $fileDimension] = $results;
+          $media->updateFileDimension($file, $fileDimension);
+        }
+
         // resize original if is the case
         if (\is_int($this->originalMaxWidth)) {
             [$file, $fileDimension] = $this->resizeOriginalFile($file, $fileDimension);
@@ -56,6 +65,23 @@ abstract class AbstractGenerateImageThumbnails
         // generate thumbnails
         $media->addThumbnails($this->makeThumbnails($fileDimension, $file));
         $this->mediaRepository->save($media);
+    }
+
+    protected function reorientOriginalFile(File $file): ?array {
+      $filepath = $this->filePathResolver->resolve($file->path());
+
+      // Hack: only works for ImageMagic resize_driver
+      $manager   = new ImageManager(['driver' => ImageResizeDriver::IMAGICK->value]);
+      $image     = $manager->make($filepath);
+      if ($image->exif('Orientation')<=1) return null;
+
+      $image->orientate();
+      $image->save($filepath);
+
+      $file          = $file->updateSize($image->filesize());
+      $fileDimension = new Dimension($image->width(),$image->height());
+
+      return [$file,$fileDimension];
     }
 
     /**
