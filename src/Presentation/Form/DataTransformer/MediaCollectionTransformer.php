@@ -64,11 +64,19 @@ class MediaCollectionTransformer implements DataTransformerInterface
         $medias          = $this->mediaRepository->findByIds(
             ...array_map(static fn(string $id) => MediaId::fromString($id), $ids)
         );
-        $arrayCollection = new ArrayCollection();
-        foreach ($medias as $media) {
-            $arrayCollection->add($media);
-        }
 
+        // Ensure the order of the medias is the same as the order of the ids
+        $medias = array_combine(
+          array_map(fn(Media $media) => $media->id()->asString(), $medias),
+          $medias
+        );
+
+        $arrayCollection = new ArrayCollection();
+        foreach ($ids as $id) {
+          if (isset($medias[$id])) {
+            $arrayCollection->add($medias[$id]);
+          }
+        }
         return $arrayCollection;
     }
 }
