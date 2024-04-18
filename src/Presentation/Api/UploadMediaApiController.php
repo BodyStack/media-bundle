@@ -49,15 +49,15 @@ class UploadMediaApiController extends BaseMediaApiController
 
         try {
             $this->uploadedFileValidator->validate($uploadedFileRequest);
-            $this->eventDispatcher->dispatch(
+            $preEvent = $this->eventDispatcher->dispatch(
                 new PreCreateEvent($uploadedFileRequest),
                 PreCreateEvent::NAME
             );
             $mediaResponse = $this->createMedia->__invoke(
-                $uploadedFileRequest,
+                $preEvent->getUploadedFileRequest(),
                 $this->doctrineOrmUserMediaRepository->getUserIdentifierFromUser($user)
             );
-            $this->eventDispatcher->dispatch(
+            $postEvent = $this->eventDispatcher->dispatch(
                 new PostCreateEvent($mediaResponse),
                 PostCreateEvent::NAME
             );
@@ -65,7 +65,7 @@ class UploadMediaApiController extends BaseMediaApiController
             throw ApiProblemException::fromThrowable($throwable);
         }
 
-        return $this->json($mediaResponse, Response::HTTP_OK);
+        return $this->json($postEvent->getMediaResponse(), Response::HTTP_OK);
     }
 
 }

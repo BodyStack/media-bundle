@@ -23,4 +23,9 @@ class PostCreateEvent extends Event
     {
         return $this->mediaResponse;
     }
+
+    public function setMediaResponse(MediaResponse $mediaResponse)
+    {
+        $this->mediaResponse = $mediaResponse;
+    }
 }

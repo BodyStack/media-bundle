@@ -23,4 +23,9 @@ class PreCreateEvent extends Event
     {
         return $this->uploadedFileRequest;
     }
+
+    public function setUploadedFileRequest(UploadedFileRequest $uploadedFileRequest)
+    {
+        $this->uploadedFileRequest = $uploadedFileRequest;
+    }
 }
