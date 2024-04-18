@@ -22,13 +22,13 @@ class DeleteMedia
     public function __invoke(string $id): void
     {
         $media    = $this->mediaRepository->getById(MediaId::fromString($id));
-        $fileName = $media->file()->name();
+        $filePath = $media->file()->path();
         /* record events */
         $media->delete();
         /* Delete from DB */
         $this->mediaRepository->delete($media);
         /* Delete from filesystem */
-        $this->fileRepository->delete($fileName);
+        $this->fileRepository->delete($filePath);
         /* raised events */
         $this->domainEventPublisher->publish(...$media->recordedEvents());
     }
